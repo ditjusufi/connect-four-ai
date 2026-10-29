@@ -1,7 +1,8 @@
 from game import play_game
-from players import HumanPlayer, RandomPlayer
+from minimax_player import MinimaxPlayer
+from players import HumanPlayer
 
-winner = play_game(HumanPlayer(), RandomPlayer(), verbose=True)
+winner = play_game(HumanPlayer(), MinimaxPlayer(depth=4), verbose=True)
 if winner is None:
     print("Draw")
 elif winner == 1:
