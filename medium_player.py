@@ -57,6 +57,22 @@ def safe_moves(board, moves):
     return safe
 
 
+def highest_scoring_move(moves, scores):
+    """Return the move with the highest score; earlier (more central) moves win ties."""
+    best_move = moves[0]
+    best_score = scores[0]
+    for index in range(1, len(moves)):
+        if scores[index] > best_score:
+            best_move = moves[index]
+            best_score = scores[index]
+    return best_move
+
+
+def explanation(column, reason, scores):
+    """Bundle a chosen column, the reason for it and the model scores into one dictionary."""
+    return {"column": column, "reason": reason, "scores": scores}
+
+
 class MediumPlayer:
     def __init__(self, model=None, model_path="models/medium_model.joblib",
                  use_rules=True, use_model=True):
@@ -69,6 +85,10 @@ class MediumPlayer:
 
     def choose_move(self, board):
         """Pick a column using the rules first and then the model."""
+        return self.explain_move(board)["column"]
+
+    def explain_move(self, board):
+        """Return the chosen column, the reason (win, block, only safe move, model, center) and the model scores."""
         me = board.current_player
         opponent = other_player(me)
         moves = center_first(board.legal_moves())
@@ -76,15 +96,21 @@ class MediumPlayer:
         if self.use_rules:
             my_wins = center_first(winning_moves(board, me))
             if len(my_wins) > 0:
-                return my_wins[0]
+                return explanation(my_wins[0], "win", {})
             their_wins = center_first(winning_moves(board, opponent))
             if len(their_wins) > 0:
-                return their_wins[0]
+                return explanation(their_wins[0], "block", {})
             moves = safe_moves(board, moves)
+            if len(moves) == 1:
+                return explanation(moves[0], "only safe move", {})
 
         if not self.use_model:
-            return moves[0]
-        return self.best_move_by_model(board, moves)
+            return explanation(moves[0], "center", {})
+        scores = self.move_scores(board, moves)
+        model_scores = {}
+        for index in range(len(moves)):
+            model_scores[moves[index]] = float(scores[index])
+        return explanation(highest_scoring_move(moves, scores), "model", model_scores)
 
     def move_scores(self, board, moves):
         """Score each move as P(loss for x) + 0.5 * P(draw for x), x being the opponent."""
@@ -105,11 +131,4 @@ class MediumPlayer:
 
     def best_move_by_model(self, board, moves):
         """Return the move with the highest model score; earlier (more central) moves win ties."""
-        scores = self.move_scores(board, moves)
-        best_move = moves[0]
-        best_score = scores[0]
-        for index in range(1, len(moves)):
-            if scores[index] > best_score:
-                best_move = moves[index]
-                best_score = scores[index]
-        return best_move
+        return highest_scoring_move(moves, self.move_scores(board, moves))
