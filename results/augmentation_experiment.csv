@@ -1,0 +1,3 @@
+training_data,test_accuracy,test_macro_f1
+with mirror augmentation,0.8532,0.7104
+without mirror augmentation,0.8461,0.6964

@@ -1,0 +1,4 @@
+model,best_params,cv_macro_f1,test_accuracy,test_macro_f1,baseline_accuracy,selected,loss_precision,loss_recall,loss_f1,draw_precision,draw_recall,draw_f1,win_precision,win_recall,win_f1
+LogisticRegression,{'C': 1},0.4977,0.753,0.4972,0.6583,False,0.656,0.6123,0.6334,0.5263,0.0078,0.0153,0.7823,0.9137,0.8429
+RandomForest,"{'max_depth': 20, 'n_estimators': 100}",0.57,0.8083,0.5668,0.6583,False,0.8309,0.6646,0.7385,0.6667,0.0434,0.0815,0.8038,0.973,0.8804
+MLP,"{'alpha': 0.001, 'hidden_layer_sizes': (128, 64)}",0.7125,0.8532,0.7104,0.6583,True,0.8074,0.8176,0.8124,0.4959,0.3302,0.3965,0.903,0.9424,0.9223
